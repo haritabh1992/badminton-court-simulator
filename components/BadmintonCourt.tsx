@@ -18,8 +18,13 @@ export default function BadmintonCourt() {
     shuttlePosition,
     updatePlayerPosition,
     updateShuttlePosition,
+    handlePositionChangeComplete,
     toggleGameMode,
     resetPositions,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
   } = useCourtPositions({ width: courtWidth, height: courtHeight });
 
   return (
@@ -37,6 +42,7 @@ export default function BadmintonCourt() {
             position={pos}
             color="#ff4444"
             onPositionChange={(newPos) => updatePlayerPosition('team1', index, newPos)}
+            onPositionChangeComplete={handlePositionChangeComplete}
           />
         ))}
         {playerPositions.team2.map((pos, index) => (
@@ -45,6 +51,7 @@ export default function BadmintonCourt() {
             position={pos}
             color="#4444ff"
             onPositionChange={(newPos) => updatePlayerPosition('team2', index, newPos)}
+            onPositionChangeComplete={handlePositionChangeComplete}
           />
         ))}
 
@@ -52,17 +59,30 @@ export default function BadmintonCourt() {
           position={shuttlePosition}
           color="#ffffff"
           onPositionChange={updateShuttlePosition}
+          onPositionChangeComplete={handlePositionChangeComplete}
         />
       </View>
 
       <IconButton
-        icon={isDoubles ? "👥" : "👤"}
+        icon="◀"
+        position="left"
+        onPress={undo}
+        disabled={!canUndo}
+      />
+      <IconButton
+        icon="▶"
         position="right"
+        onPress={redo}
+        disabled={!canRedo}
+      />
+      <IconButton
+        icon={isDoubles ? "👥" : "👤"}
+        position="topRight"
         onPress={() => toggleGameMode(!isDoubles)}
       />
       <IconButton
         icon="↺"
-        position="left"
+        position="topLeft"
         onPress={resetPositions}
       />
     </View>

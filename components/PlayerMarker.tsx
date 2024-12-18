@@ -5,26 +5,16 @@ interface PlayerMarkerProps {
   position: { x: number; y: number };
   color: string;
   onPositionChange?: (newPosition: { x: number; y: number }) => void;
+  onPositionChangeComplete?: () => void;
 }
 
-export function PlayerMarker({ position, color, onPositionChange }: PlayerMarkerProps) {
+export function PlayerMarker({ 
+  position, 
+  color, 
+  onPositionChange, 
+  onPositionChangeComplete 
+}: PlayerMarkerProps) {
   const [touchOffset, setTouchOffset] = useState({ x: 0, y: 0 });
-
-  const handleTouchStart = (event: GestureResponderEvent) => {
-    const touch = event.nativeEvent;
-    setTouchOffset({
-      x: touch.pageX - position.x,
-      y: touch.pageY - position.y,
-    });
-  };
-
-  const handleTouchMove = (event: GestureResponderEvent) => {
-    const touch = event.nativeEvent;
-    onPositionChange?.({
-      x: touch.pageX - touchOffset.x,
-      y: touch.pageY - touchOffset.y,
-    });
-  };
 
   return (
     <View
@@ -37,8 +27,25 @@ export function PlayerMarker({ position, color, onPositionChange }: PlayerMarker
           borderColor: color === '#ffffff' ? '#000000' : 'white',
         },
       ]}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
+      onStartShouldSetResponder={() => true}
+      onMoveShouldSetResponder={() => true}
+      onResponderGrant={(event: GestureResponderEvent) => {
+        const touch = event.nativeEvent;
+        setTouchOffset({
+          x: touch.pageX - position.x,
+          y: touch.pageY - position.y,
+        });
+      }}
+      onResponderMove={(event: GestureResponderEvent) => {
+        const touch = event.nativeEvent;
+        onPositionChange?.({
+          x: touch.pageX - touchOffset.x,
+          y: touch.pageY - touchOffset.y,
+        });
+      }}
+      onResponderRelease={() => {
+        onPositionChangeComplete?.();
+      }}
     />
   );
 }
