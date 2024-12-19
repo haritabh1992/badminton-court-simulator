@@ -3,7 +3,7 @@
     "name": "Badminton Court Simulator",
     "slug": "badminton-court-simulator",
     "version": "1.0.0",
-    "orientation": "landscape",
+    "orientation": "portrait",
     "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
     "splash": {

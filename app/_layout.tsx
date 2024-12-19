@@ -15,7 +15,7 @@ export default function Layout() {
     <Stack 
       screenOptions={{
         headerShown: false,
-        orientation: 'landscape'
+        orientation: 'portrait'
       }} 
     />
   );

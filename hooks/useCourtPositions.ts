@@ -13,26 +13,26 @@ export function useCourtPositions(courtDimensions: CourtDimensions) {
   const [tempPosition, setTempPosition] = useState<PositionState | null>(null);
 
   const getInitialPositions = useCallback((isDoublesMode: boolean): TeamPositions => {
-    const leftOffset = courtDimensions.width * 0.25;
-    const rightOffset = courtDimensions.width * 0.75;
-    const frontY = courtDimensions.height * 0.3;
-    const backY = courtDimensions.height * 0.7;
+    const topOffset = courtDimensions.height * -0.02;
+    const bottomOffset = courtDimensions.height * 1.02;
+    const leftX = courtDimensions.width * 0.4;
+    const rightX = courtDimensions.width * 0.6;
 
     if (isDoublesMode) {
       return {
         team1: [
-          { x: leftOffset, y: frontY },  // Left front
-          { x: leftOffset, y: backY },   // Left back
+          { x: leftX, y: topOffset },    // Top left
+          { x: rightX, y: topOffset },   // Top right
         ],
         team2: [
-          { x: rightOffset, y: backY },  // Right back
-          { x: rightOffset, y: frontY }, // Right front
+          { x: rightX, y: bottomOffset }, // Bottom right
+          { x: leftX, y: bottomOffset },  // Bottom left
         ],
       };
     }
     return {
-      team1: [{ x: leftOffset, y: frontY }],  // Left front
-      team2: [{ x: rightOffset, y: backY }],  // Right back
+      team1: [{ x: leftX, y: topOffset }],     // Top left
+      team2: [{ x: rightX, y: bottomOffset }], // Bottom right
     };
   }, [courtDimensions]);
 
