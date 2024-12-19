@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Image, Dimensions } from 'react-native';
+import { View, StyleSheet, Image, Dimensions, Text } from 'react-native';
 import { PlayerMarker } from './PlayerMarker';
 import { IconButton } from './IconButton';
 import { useCourtPositions } from '../hooks/useCourtPositions';
@@ -10,12 +10,12 @@ export default function BadmintonCourt() {
   const screenHeight = Dimensions.get('window').height;
   
   const BUTTON_CONTAINER_HEIGHT = 60;
-  const availableHeight = screenHeight - 2.2*BUTTON_CONTAINER_HEIGHT;
+  const BANNER_HEIGHT = 50;
+  const availableHeight = screenHeight - 2.2*BUTTON_CONTAINER_HEIGHT - BANNER_HEIGHT;
   
-  // For a 90-degree rotated image, we want the container's width to be the screen height
-  // and the container's height to be the screen width
-  const courtWidth = availableHeight;  // Container width matches available height
-  const courtHeight = screenWidth;     // Container height matches screen width
+  // Without rotation, use normal width/height mapping
+  const courtWidth = screenWidth;      // Container width matches screen width
+  const courtHeight = availableHeight; // Container height matches available height
 
   const {
     isDoubles,
@@ -39,6 +39,10 @@ export default function BadmintonCourt() {
 
   return (
     <View style={styles.container}>
+      <View style={[styles.banner, { height: BANNER_HEIGHT }]}>
+        <Text style={styles.bannerText}>Badminton Court Simulator</Text>
+      </View>
+
       <View style={[styles.courtWrapper, { marginBottom: BUTTON_CONTAINER_HEIGHT }]}>
         <View 
           style={[
@@ -51,7 +55,7 @@ export default function BadmintonCourt() {
         >
           <Image
             source={require('../assets/badminton-court.png')}
-            style={[styles.courtImage, { transform: [{ rotate: '90deg' }] }]}
+            style={styles.courtImage}
             resizeMode="stretch"
           />
 
@@ -201,5 +205,18 @@ const styles = StyleSheet.create({
     width: 1,
     height: '60%',
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
+  },
+  banner: {
+    width: '100%',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  bannerText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
   },
 }); 

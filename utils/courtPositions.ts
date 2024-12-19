@@ -1,26 +1,29 @@
 import { TeamPositions, CourtDimensions, PlayerPosition } from '../types/game';
 
 export function getInitialPositions(isDoublesMode: boolean, courtDimensions: CourtDimensions): TeamPositions {
-  const topOffset = courtDimensions.height * -0.02;
-  const bottomOffset = courtDimensions.height * 1.02;
-  const leftX = courtDimensions.width * 0.4;
-  const rightX = courtDimensions.width * 0.6;
+  // Calculate center point
+  const centerX = courtDimensions.width * 0.5;
+  const centerY = courtDimensions.height * 0.5;
+  
+  // Calculate offset from center (about 50% of the distance to corners)
+  const offsetX = courtDimensions.width * 0.25;  // 25% of width from center
+  const offsetY = courtDimensions.height * 0.25; // 25% of height from center
 
   if (isDoublesMode) {
     return {
       team1: [
-        { x: leftX, y: topOffset },    // Top left
-        { x: rightX, y: topOffset },   // Top right
+        { x: centerX - offsetX, y: centerY - offsetY }, // Top left
+        { x: centerX - offsetX, y: centerY + offsetY }, // Bottom left
       ],
       team2: [
-        { x: rightX, y: bottomOffset }, // Bottom right
-        { x: leftX, y: bottomOffset },  // Bottom left
+        { x: centerX + offsetX, y: centerY + offsetY }, // Bottom right
+        { x: centerX + offsetX, y: centerY - offsetY }, // Top right
       ],
     };
   }
   return {
-    team1: [{ x: leftX, y: topOffset }],     // Top left
-    team2: [{ x: rightX, y: bottomOffset }], // Bottom right
+    team1: [{ x: centerX - offsetX, y: centerY - offsetY }], // Top left
+    team2: [{ x: centerX + offsetX, y: centerY + offsetY }], // Bottom right
   };
 }
 
