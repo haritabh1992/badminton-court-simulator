@@ -21,6 +21,7 @@ export default function BadmintonCourt() {
     isDoubles,
     playerPositions,
     shuttlePosition,
+    ghostPositions,
     updatePlayerPosition,
     updateShuttlePosition,
     handlePositionChangeComplete,
@@ -30,9 +31,10 @@ export default function BadmintonCourt() {
     redo,
     canUndo,
     canRedo,
-    lastStationaryPlayers,
-    lastStationaryShuttle,
-    ghostPositions,
+    showPlayerTrails,
+    showShuttleTrail,
+    togglePlayerTrails,
+    toggleShuttleTrail,
   } = useCourtPositions({ width: courtWidth, height: courtHeight });
 
   return (
@@ -53,7 +55,7 @@ export default function BadmintonCourt() {
             resizeMode="stretch"
           />
 
-          {playerPositions.team1.map((pos, index) => (
+          {showPlayerTrails && playerPositions.team1.map((pos, index) => (
             ghostPositions?.team1[index] && (
               <PositionTrail
                 key={`trail-team1-${index}`}
@@ -63,7 +65,7 @@ export default function BadmintonCourt() {
               />
             )
           ))}
-          {playerPositions.team2.map((pos, index) => (
+          {showPlayerTrails && playerPositions.team2.map((pos, index) => (
             ghostPositions?.team2[index] && (
               <PositionTrail
                 key={`trail-team2-${index}`}
@@ -73,7 +75,7 @@ export default function BadmintonCourt() {
               />
             )
           ))}
-          {shuttlePosition && ghostPositions?.shuttle && (
+          {showShuttleTrail && shuttlePosition && ghostPositions?.shuttle && (
             <PositionTrail
               currentPosition={shuttlePosition}
               ghostPosition={ghostPositions.shuttle}
@@ -113,24 +115,47 @@ export default function BadmintonCourt() {
       </View>
 
       <View style={[styles.buttonContainer, { height: BUTTON_CONTAINER_HEIGHT }]}>
-        <IconButton
-          icon="↺"
-          onPress={resetPositions}
-        />
-        <IconButton
-          icon="◀"
-          onPress={undo}
-          disabled={!canUndo}
-        />
-        <IconButton
-          icon="▶"
-          onPress={redo}
-          disabled={!canRedo}
-        />
-        <IconButton
-          icon={isDoubles ? "👥" : "👤"}
-          onPress={() => toggleGameMode(!isDoubles)}
-        />
+        {/* Left group: Reset and game mode */}
+        <View style={styles.buttonGroup}>
+          <IconButton
+            icon="↺"
+            onPress={resetPositions}
+          />
+          <IconButton
+            icon={isDoubles ? "👥" : "👤"}
+            onPress={() => toggleGameMode(!isDoubles)}
+          />
+        </View>
+
+        <View style={styles.divider} />
+
+        {/* Center group: Undo/Redo */}
+        <View style={styles.buttonGroup}>
+          <IconButton
+            icon="◀"
+            onPress={undo}
+            disabled={!canUndo}
+          />
+          <IconButton
+            icon="▶"
+            onPress={redo}
+            disabled={!canRedo}
+          />
+        </View>
+
+        <View style={styles.divider} />
+
+        {/* Right group: Trail toggles */}
+        <View style={styles.buttonGroup}>
+          <IconButton
+            icon="👟"
+            onPress={togglePlayerTrails}
+          />
+          <IconButton
+            icon="🏸"
+            onPress={toggleShuttleTrail}
+          />
+        </View>
       </View>
     </View>
   );
@@ -159,11 +184,22 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
     paddingHorizontal: 20,
-    gap: 20,
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
+  },
+  buttonGroup: {
+    flexDirection: 'row',
+    gap: 20,
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
+  divider: {
+    width: 1,
+    height: '60%',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
   },
 }); 

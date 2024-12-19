@@ -1,5 +1,6 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { StyleSheet, Animated } from 'react-native';
+import { PlayerPosition } from '../types/game';
 
 interface PositionTrailProps {
   currentPosition: PlayerPosition;
@@ -8,6 +9,25 @@ interface PositionTrailProps {
 }
 
 export function PositionTrail({ currentPosition, ghostPosition, color }: PositionTrailProps) {
+  const opacity = useRef(new Animated.Value(1)).current;
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    // Only animate after the first render
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    // Don't reset opacity, just ensure it's visible
+    Animated.spring(opacity, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 280,
+      friction: 22,
+    }).start();
+  }, []);  // Empty dependency array - only run on mount
+
   // Calculate the angle and length of the line
   const dx = currentPosition.x - ghostPosition.x;
   const dy = currentPosition.y - ghostPosition.y;
@@ -19,7 +39,7 @@ export function PositionTrail({ currentPosition, ghostPosition, color }: Positio
   const DOT_SPACING = 8;
   const numberOfDots = Math.floor(length / DOT_SPACING);
   const dots = Array.from({ length: numberOfDots }, (_, i) => (
-    <View
+    <Animated.View
       key={i}
       style={[
         styles.dot,
@@ -29,6 +49,10 @@ export function PositionTrail({ currentPosition, ghostPosition, color }: Positio
           backgroundColor: color,
           width: DOT_SIZE,
           height: DOT_SIZE,
+          opacity: opacity.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 0.5],
+          }),
         },
       ]}
     />
@@ -37,7 +61,7 @@ export function PositionTrail({ currentPosition, ghostPosition, color }: Positio
   return (
     <>
       {dots}
-      <View
+      <Animated.View
         style={[
           styles.ghostMarker,
           {
@@ -45,7 +69,10 @@ export function PositionTrail({ currentPosition, ghostPosition, color }: Positio
             top: ghostPosition.y,
             backgroundColor: color,
             borderColor: color === '#ffffff' ? '#000000' : 'white',
-            opacity: 0.3,
+            opacity: opacity.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, 0.3],
+            }),
           },
         ]}
       />
@@ -57,7 +84,6 @@ const styles = StyleSheet.create({
   dot: {
     position: 'absolute',
     borderRadius: 1.5,
-    opacity: 0.5,
   },
   ghostMarker: {
     position: 'absolute',

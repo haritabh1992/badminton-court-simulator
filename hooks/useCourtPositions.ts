@@ -17,6 +17,8 @@ interface PositionState {
 
 export function useCourtPositions(courtDimensions: CourtDimensions) {
   const [isDoubles, setIsDoubles] = useState(false);
+  const [showPlayerTrails, setShowPlayerTrails] = useState(true);
+  const [showShuttleTrail, setShowShuttleTrail] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [positionHistory, setPositionHistory] = useState<PositionState[]>([]);
   const [tempPosition, setTempPosition] = useState<PositionState | null>(null);
@@ -169,6 +171,14 @@ export function useCourtPositions(courtDimensions: CourtDimensions) {
     if (currentIndex < positionHistory.length - 1) setCurrentIndex(prev => prev + 1);
   }, [currentIndex, positionHistory.length]);
 
+  const togglePlayerTrails = useCallback(() => {
+    setShowPlayerTrails(prev => !prev);
+  }, []);
+
+  const toggleShuttleTrail = useCallback(() => {
+    setShowShuttleTrail(prev => !prev);
+  }, []);
+
   return {
     isDoubles,
     playerPositions: tempPosition?.players || positionHistory[currentIndex]?.players || getInitialPositions(isDoubles, courtDimensions),
@@ -188,5 +198,9 @@ export function useCourtPositions(courtDimensions: CourtDimensions) {
     },
     lastStationaryShuttle: positionHistory[currentIndex]?.lastStationaryPositions?.shuttle,
     ghostPositions: tempPosition?.ghostPositions || positionHistory[currentIndex]?.ghostPositions,
+    showPlayerTrails,
+    showShuttleTrail,
+    togglePlayerTrails,
+    toggleShuttleTrail,
   };
 } 
