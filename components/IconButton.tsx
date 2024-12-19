@@ -5,19 +5,25 @@ interface IconButtonProps {
   onPress: () => void;
   icon: string;
   disabled?: boolean;
+  active?: boolean;
 }
 
-export function IconButton({ onPress, icon, disabled }: Omit<IconButtonProps, 'position'>) {
+export function IconButton({ onPress, icon, disabled, active }: Omit<IconButtonProps, 'position'>) {
   return (
     <TouchableOpacity 
       style={[
         styles.button,
-        disabled && styles.disabled
+        disabled && styles.disabled,
+        active && styles.active
       ]}
       onPress={onPress}
       disabled={disabled}
     >
-      <Text style={[styles.buttonText, disabled && styles.disabledText]}>{icon}</Text>
+      <Text style={[
+        styles.buttonText, 
+        disabled && styles.disabledText,
+        active && styles.activeText
+      ]}>{icon}</Text>
     </TouchableOpacity>
   );
 }
@@ -40,5 +46,11 @@ const styles = StyleSheet.create({
   },
   disabledText: {
     color: '#666',
+  },
+  active: {
+    backgroundColor: 'rgba(33, 150, 243, 0.3)',
+  },
+  activeText: {
+    color: '#2196F3',
   },
 }); 

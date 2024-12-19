@@ -9,7 +9,7 @@ export default function BadmintonCourt() {
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
   
-  const BUTTON_CONTAINER_HEIGHT = 60;
+  const BUTTON_CONTAINER_HEIGHT = 75;
   const BANNER_HEIGHT = 50;
   const availableHeight = screenHeight - 2.2*BUTTON_CONTAINER_HEIGHT - BANNER_HEIGHT;
   
@@ -118,47 +118,61 @@ export default function BadmintonCourt() {
         </View>
       </View>
 
-      <View style={[styles.buttonContainer, { height: BUTTON_CONTAINER_HEIGHT }]}>
-        {/* Left group: Reset and game mode */}
-        <View style={styles.buttonGroup}>
-          <IconButton
-            icon="↺"
-            onPress={resetPositions}
-          />
-          <IconButton
-            icon={isDoubles ? "👥" : "👤"}
-            onPress={() => toggleGameMode(!isDoubles)}
-          />
+      <View style={[styles.buttonContainer, { 
+        height: BUTTON_CONTAINER_HEIGHT,
+        bottom: 4  // Add some padding from the bottom
+      }]}>
+        {/* Left group: Game setup */}
+        <View>
+          <Text style={styles.buttonGroupLabel}>Game Setup</Text>
+          <View style={styles.buttonGroup}>
+            <IconButton
+              icon="↺"
+              onPress={resetPositions}
+            />
+            <IconButton
+              icon={isDoubles ? "👥" : "👤"}
+              onPress={() => toggleGameMode(!isDoubles)}
+            />
+          </View>
         </View>
 
         <View style={styles.divider} />
 
-        {/* Center group: Undo/Redo */}
-        <View style={styles.buttonGroup}>
-          <IconButton
-            icon="◀"
-            onPress={undo}
-            disabled={!canUndo}
-          />
-          <IconButton
-            icon="▶"
-            onPress={redo}
-            disabled={!canRedo}
-          />
+        {/* Center group: History Navigation */}
+        <View>
+          <Text style={styles.buttonGroupLabel}>History Navigation</Text>
+          <View style={styles.buttonGroup}>
+            <IconButton
+              icon="◀"
+              onPress={undo}
+              disabled={!canUndo}
+            />
+            <IconButton
+              icon="▶"
+              onPress={redo}
+              disabled={!canRedo}
+            />
+          </View>
         </View>
 
         <View style={styles.divider} />
 
-        {/* Right group: Trail toggles */}
-        <View style={styles.buttonGroup}>
-          <IconButton
-            icon="👟"
-            onPress={togglePlayerTrails}
-          />
-          <IconButton
-            icon="🏸"
-            onPress={toggleShuttleTrail}
-          />
+        {/* Right group: Trail Markers */}
+        <View>
+          <Text style={styles.buttonGroupLabel}>Trail Markers</Text>
+          <View style={styles.buttonGroup}>
+            <IconButton
+              icon="👟"
+              onPress={togglePlayerTrails}
+              active={showPlayerTrails}
+            />
+            <IconButton
+              icon="🏸"
+              onPress={toggleShuttleTrail}
+              active={showShuttleTrail}
+            />
+          </View>
         </View>
       </View>
     </View>
@@ -186,13 +200,14 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    width: '100%',
     paddingHorizontal: 20,
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 15,  // Add rounded corners
+    marginHorizontal: 10,  // Add some horizontal padding
+    width: '100%',  
   },
   buttonGroup: {
     flexDirection: 'row',
@@ -218,5 +233,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: '#333',
+  },
+  buttonGroupLabel: {
+    fontSize: 12,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 4,
   },
 }); 
