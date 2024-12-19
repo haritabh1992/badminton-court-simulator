@@ -5,6 +5,7 @@ interface PlayerMarkerProps {
   position: { x: number; y: number };
   color: string;
   onPositionChange?: (newPosition: { x: number; y: number }) => void;
+  onPositionStart?: (newPosition: { x: number; y: number }) => void;
   onPositionChangeComplete?: () => void;
 }
 
@@ -12,6 +13,7 @@ export function PlayerMarker({
   position, 
   color, 
   onPositionChange, 
+  onPositionStart, 
   onPositionChangeComplete 
 }: PlayerMarkerProps) {
   const [touchOffset, setTouchOffset] = useState({ x: 0, y: 0 });
@@ -35,6 +37,7 @@ export function PlayerMarker({
           x: touch.pageX - position.x,
           y: touch.pageY - position.y,
         });
+        onPositionStart?.(position);
       }}
       onResponderMove={(event: GestureResponderEvent) => {
         const touch = event.nativeEvent;

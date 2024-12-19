@@ -3,13 +3,14 @@ import { View, StyleSheet, Image, Dimensions } from 'react-native';
 import { PlayerMarker } from './PlayerMarker';
 import { IconButton } from './IconButton';
 import { useCourtPositions } from '../hooks/useCourtPositions';
+import { PositionTrail } from './PositionTrail';
 
 export default function BadmintonCourt() {
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
   
   const BUTTON_CONTAINER_HEIGHT = 60;
-  const availableHeight = screenHeight - BUTTON_CONTAINER_HEIGHT;
+  const availableHeight = screenHeight - 2.2*BUTTON_CONTAINER_HEIGHT;
   
   // For a 90-degree rotated image, we want the container's width to be the screen height
   // and the container's height to be the screen width
@@ -29,6 +30,9 @@ export default function BadmintonCourt() {
     redo,
     canUndo,
     canRedo,
+    lastStationaryPlayers,
+    lastStationaryShuttle,
+    ghostPositions,
   } = useCourtPositions({ width: courtWidth, height: courtHeight });
 
   return (
@@ -50,11 +54,40 @@ export default function BadmintonCourt() {
           />
 
           {playerPositions.team1.map((pos, index) => (
+            ghostPositions?.team1[index] && (
+              <PositionTrail
+                key={`trail-team1-${index}`}
+                currentPosition={pos}
+                ghostPosition={ghostPositions.team1[index]!}
+                color="#ff4444"
+              />
+            )
+          ))}
+          {playerPositions.team2.map((pos, index) => (
+            ghostPositions?.team2[index] && (
+              <PositionTrail
+                key={`trail-team2-${index}`}
+                currentPosition={pos}
+                ghostPosition={ghostPositions.team2[index]!}
+                color="#4444ff"
+              />
+            )
+          ))}
+          {shuttlePosition && ghostPositions?.shuttle && (
+            <PositionTrail
+              currentPosition={shuttlePosition}
+              ghostPosition={ghostPositions.shuttle}
+              color="#ffffff"
+            />
+          )}
+
+          {playerPositions.team1.map((pos, index) => (
             <PlayerMarker 
               key={`team1-${index}`}
               position={pos}
               color="#ff4444"
               onPositionChange={(newPos) => updatePlayerPosition('team1', index, newPos)}
+              onPositionStart={(newPos) => updatePlayerPosition('team1', index, newPos, true)}
               onPositionChangeComplete={handlePositionChangeComplete}
             />
           ))}
@@ -64,6 +97,7 @@ export default function BadmintonCourt() {
               position={pos}
               color="#4444ff"
               onPositionChange={(newPos) => updatePlayerPosition('team2', index, newPos)}
+              onPositionStart={(newPos) => updatePlayerPosition('team2', index, newPos, true)}
               onPositionChangeComplete={handlePositionChangeComplete}
             />
           ))}
@@ -72,6 +106,7 @@ export default function BadmintonCourt() {
             position={shuttlePosition}
             color="#ffffff"
             onPositionChange={updateShuttlePosition}
+            onPositionStart={(newPos) => updateShuttlePosition(newPos, true)}
             onPositionChangeComplete={handlePositionChangeComplete}
           />
         </View>

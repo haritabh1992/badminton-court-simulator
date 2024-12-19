@@ -1,9 +1,18 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { TeamPositions, CourtDimensions, PlayerPosition } from '../types/game';
+import { getInitialPositions, getInitialShuttle } from '../utils/courtPositions';
+import { createLastStationaryPositions, findChangedPositions } from '../utils/positionTracking';
+
+interface GhostPosition {
+  team1: PlayerPosition[];
+  team2: PlayerPosition[];
+  shuttle: PlayerPosition;
+}
 
 interface PositionState {
   players: TeamPositions;
   shuttle: PlayerPosition;
+  ghostPositions: GhostPosition;
 }
 
 export function useCourtPositions(courtDimensions: CourtDimensions) {
@@ -11,124 +20,159 @@ export function useCourtPositions(courtDimensions: CourtDimensions) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [positionHistory, setPositionHistory] = useState<PositionState[]>([]);
   const [tempPosition, setTempPosition] = useState<PositionState | null>(null);
+  const [positions, setPositions] = useState<PositionState | null>(null);
+  // Initialize state with ghost markers at the same positions as players and shuttle
+  useEffect(() => {
+    const initialPlayers = getInitialPositions(isDoubles, courtDimensions);
+    const initialShuttle = getInitialShuttle(courtDimensions);
+    const initialState = {
+      players: initialPlayers,
+      shuttle: initialShuttle,
+      ghostPositions: {
+        team1: [...initialPlayers.team1],
+        team2: [...initialPlayers.team2],
+        shuttle: initialShuttle,
+      },
+    };
+    setPositionHistory([initialState]);
+  }, []);
 
-  const getInitialPositions = useCallback((isDoublesMode: boolean): TeamPositions => {
-    const topOffset = courtDimensions.height * -0.02;
-    const bottomOffset = courtDimensions.height * 1.02;
-    const leftX = courtDimensions.width * 0.4;
-    const rightX = courtDimensions.width * 0.6;
-
-    if (isDoublesMode) {
-      return {
-        team1: [
-          { x: leftX, y: topOffset },    // Top left
-          { x: rightX, y: topOffset },   // Top right
-        ],
-        team2: [
-          { x: rightX, y: bottomOffset }, // Bottom right
-          { x: leftX, y: bottomOffset },  // Bottom left
-        ],
+  const updatePosition = useCallback((
+    newState: Pick<PositionState, 'players' | 'shuttle'>,
+    currentState: PositionState,
+    team?: 'team1' | 'team2',
+    index?: number,
+    isShuttle: boolean = false,
+    isStart: boolean = false
+  ) => {
+    if (isStart) {
+      // Create ghost positions based on current positions, but only update
+      // the specific marker that's starting to move
+      const ghostPositions = {
+        team1: [...currentState.ghostPositions.team1],
+        team2: [...currentState.ghostPositions.team2],
+        shuttle: currentState.ghostPositions.shuttle,
       };
+
+      if (team && typeof index === 'number') {
+        // Only update the ghost position for the specific player being moved
+        ghostPositions[team][index] = currentState.players[team][index];
+      } else if (isShuttle) {
+        // Only update shuttle ghost position if shuttle is being moved
+        ghostPositions.shuttle = currentState.shuttle;
+      }
+
+      setTempPosition({
+        ...newState,
+        ghostPositions,
+      });
+
+      setPositions({
+        ...newState,
+        ghostPositions,
+      });
+    } else {
+      // During drag, maintain existing ghost positions
+      setTempPosition(prevTemp => ({
+        ...newState,
+        ghostPositions: prevTemp?.ghostPositions || currentState.ghostPositions,
+      }));
     }
-    return {
-      team1: [{ x: leftX, y: topOffset }],     // Top left
-      team2: [{ x: rightX, y: bottomOffset }], // Bottom right
-    };
-  }, [courtDimensions]);
+  }, []);
 
-  // Initialize state with first position
-  useState(() => {
-    const initialPlayers = getInitialPositions(isDoubles);
-    const initialShuttle = {
-      x: courtDimensions.width * 0.5,
-      y: courtDimensions.height * 0.5,
-    };
-    setPositionHistory([{ players: initialPlayers, shuttle: initialShuttle }]);
-  });
-
-  const addToHistory = (players: TeamPositions, shuttle: PlayerPosition) => {
-    setPositionHistory(prev => {
-      // Remove any future states if we're not at the end
-      const newHistory = prev.slice(0, currentIndex + 1);
-      return [...newHistory, { players, shuttle }];
-    });
-    setCurrentIndex(prev => prev + 1);
-  };
-
-  const updatePlayerPosition = (team: 'team1' | 'team2', index: number, newPosition: PlayerPosition) => {
+  const updatePlayerPosition = useCallback((
+    team: 'team1' | 'team2',
+    index: number,
+    newPosition: PlayerPosition,
+    isStart: boolean = false
+  ) => {
+    const currentState = positionHistory[currentIndex];
     const newPlayers = {
-      ...positionHistory[currentIndex].players,
-      [team]: positionHistory[currentIndex].players[team].map((pos, i) => 
+      ...currentState.players,
+      [team]: currentState.players[team].map((pos, i) => 
         i === index ? newPosition : pos
       ),
     };
-    // Just update temp position during movement
-    setTempPosition({
-      players: newPlayers,
-      shuttle: positionHistory[currentIndex].shuttle,
-    });
-  };
+    
+    updatePosition({ 
+      players: newPlayers, 
+      shuttle: currentState.shuttle 
+    }, currentState, team, index, false, isStart);
+  }, [currentIndex, positionHistory, updatePosition]);
 
-  const updateShuttlePosition = (newPosition: PlayerPosition) => {
-    // Just update temp position during movement
-    setTempPosition({
-      players: positionHistory[currentIndex].players,
-      shuttle: newPosition,
-    });
-  };
+  const updateShuttlePosition = useCallback((
+    newPosition: PlayerPosition,
+    isStart: boolean = false
+  ) => {
+    const currentState = positionHistory[currentIndex];
+    updatePosition({ 
+      players: currentState.players, 
+      shuttle: newPosition 
+    }, currentState, undefined, undefined, true, isStart);
+  }, [currentIndex, positionHistory, updatePosition]);
 
-  const handlePositionChangeComplete = () => {
-    if (tempPosition) {
-      // Add to history only when movement ends
-      setPositionHistory(prev => {
-        const newHistory = prev.slice(0, currentIndex + 1);
-        return [...newHistory, tempPosition];
-      });
-      setCurrentIndex(prev => prev + 1);
-      setTempPosition(null);
-    }
-  };
+  const handlePositionChangeComplete = useCallback(() => {
+    if (!tempPosition) return;
+
+    // When drag completes, update the position history with the new positions
+    // and their corresponding ghost positions
+    setPositionHistory(prev => {
+      const newHistory = prev.slice(0, currentIndex + 1);
+      return [...newHistory, {
+        ...tempPosition,
+        ghostPositions: tempPosition.ghostPositions,
+      }];
+    });
+    setCurrentIndex(prev => prev + 1);
+    setTempPosition(null);
+  }, [currentIndex, tempPosition]);
+
+  // Reset ghost markers when resetting positions
+  const resetPositions = useCallback(() => {
+    const initialPlayers = getInitialPositions(isDoubles, courtDimensions);
+    const initialShuttle = getInitialShuttle(courtDimensions);
+    const initialState = {
+      players: initialPlayers,
+      shuttle: initialShuttle,
+      ghostPositions: {
+        team1: [...initialPlayers.team1],
+        team2: [...initialPlayers.team2],
+        shuttle: initialShuttle,
+      },
+    };
+    setPositionHistory([initialState]);
+    setCurrentIndex(0);
+  }, [isDoubles, courtDimensions]);
+
+  const toggleGameMode = useCallback((value: boolean) => {
+    setIsDoubles(value);
+    const initialPlayers = getInitialPositions(value, courtDimensions);
+    const initialShuttle = getInitialShuttle(courtDimensions);
+    const initialState = {
+      players: initialPlayers,
+      shuttle: initialShuttle,
+      ghostPositions: {
+        team1: [...initialPlayers.team1],
+        team2: [...initialPlayers.team2],
+        shuttle: initialShuttle,
+      },
+    };
+    setPositionHistory([initialState]);
+    setCurrentIndex(0);
+  }, [courtDimensions]);
 
   const undo = useCallback(() => {
-    if (currentIndex > 0) {
-      setCurrentIndex(prev => prev - 1);
-    }
+    if (currentIndex > 0) setCurrentIndex(prev => prev - 1);
   }, [currentIndex]);
 
   const redo = useCallback(() => {
-    if (currentIndex < positionHistory.length - 1) {
-      setCurrentIndex(prev => prev + 1);
-    }
+    if (currentIndex < positionHistory.length - 1) setCurrentIndex(prev => prev + 1);
   }, [currentIndex, positionHistory.length]);
-
-  const resetPositions = useCallback(() => {
-    const initialPlayers = getInitialPositions(isDoubles);
-    const initialShuttle = {
-      x: courtDimensions.width * 0.5,
-      y: courtDimensions.height * 0.5,
-    };
-    setPositionHistory([{ players: initialPlayers, shuttle: initialShuttle }]);
-    setCurrentIndex(0);
-  }, [isDoubles, getInitialPositions, courtDimensions]);
-
-  const toggleGameMode = (value: boolean) => {
-    setIsDoubles(value);
-    const newPlayers = getInitialPositions(value);
-    const initialShuttle = {
-      x: courtDimensions.width * 0.5,
-      y: courtDimensions.height * 0.5,
-    };
-    setPositionHistory([{ players: newPlayers, shuttle: initialShuttle }]);
-    setCurrentIndex(0);
-  };
 
   return {
     isDoubles,
-    playerPositions: tempPosition?.players || positionHistory[currentIndex]?.players || getInitialPositions(isDoubles),
-    shuttlePosition: tempPosition?.shuttle || positionHistory[currentIndex]?.shuttle || {
-      x: courtDimensions.width * 0.5,
-      y: courtDimensions.height * 0.5,
-    },
+    playerPositions: tempPosition?.players || positionHistory[currentIndex]?.players || getInitialPositions(isDoubles, courtDimensions),
+    shuttlePosition: tempPosition?.shuttle || positionHistory[currentIndex]?.shuttle || getInitialShuttle(courtDimensions),
     updatePlayerPosition,
     updateShuttlePosition,
     handlePositionChangeComplete,
@@ -138,5 +182,11 @@ export function useCourtPositions(courtDimensions: CourtDimensions) {
     redo,
     canUndo: currentIndex > 0,
     canRedo: currentIndex < positionHistory.length - 1,
+    lastStationaryPlayers: positionHistory[currentIndex]?.lastStationaryPositions?.team1 && {
+      team1: positionHistory[currentIndex].lastStationaryPositions.team1,
+      team2: positionHistory[currentIndex].lastStationaryPositions.team2,
+    },
+    lastStationaryShuttle: positionHistory[currentIndex]?.lastStationaryPositions?.shuttle,
+    ghostPositions: tempPosition?.ghostPositions || positionHistory[currentIndex]?.ghostPositions,
   };
 } 
