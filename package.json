@@ -9,7 +9,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "clean": "rm -rf node_modules && rm -rf android/build && rm -rf android/app/build && rm -rf ios/build && rm -rf ios/Pods && watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/metro-* && rm -rf $TMPDIR/haste-*"
   },
   "jest": {
     "preset": "jest-expo"
