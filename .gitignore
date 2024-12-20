@@ -1,6 +1,4 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
-# dependencies
+# Dependencies
 node_modules/
 .pnp
 .pnp.js
@@ -9,6 +7,11 @@ node_modules/
 .expo/
 dist/
 web-build/
+
+# Build outputs
+build/
+*.apk
+*.aab
 *.jks
 *.p8
 *.p12
@@ -19,12 +22,6 @@ web-build/
 # Testing
 coverage/
 
-# Production
-build/
-*.apk
-*.aab
-*.ipa
-
 # IDE
 .idea/
 .vscode/
@@ -34,8 +31,8 @@ build/
 *.sublime-project
 *.sublime-workspace
 
-# Env files
-.env
+# Environment files
+.env*
 .env.local
 .env.development.local
 .env.test.local
@@ -46,6 +43,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 debug.log
+*.log
 
 # TypeScript
 *.tsbuildinfo
@@ -57,88 +55,36 @@ debug.log
 *.tmp
 *.temp
 
+# Example code
 app-example
 
-# Android/IntelliJ
+# Android specific
 android/app/debug
 android/app/release
 android/app/src/main/assets/shell-app-manifest.json
 android/app/src/main/assets/shell-app.bundle
 android/keystores/
+android/.gradle/
+android/captures/
+android/gradlew
+android/gradlew.bat
+android/local.properties
+android/app/build/
+android/build/
+android/local.properties
+
+# Android security files
 *.keystore
 *.jks
-local.properties
+keystore.properties
+release-keystore.properties
 
 # Android Studio
 .project
 .settings
 .classpath
-
-# Gradle
-android/.gradle
-android/captures/
-android/gradlew
-android/gradlew.bat
-android/local.properties
-
-# Android Profiling
 *.hprof
 
-# Keystore credentials
-keystore.properties
-release-keystore.properties
-
-# iOS
-ios/Pods/
-ios/build/
-ios/*.xcworkspace
-ios/*.xcodeproj/xcuserdata/
-ios/*.xcodeproj/project.xcworkspace/xcuserdata/
-ios/Podfile.lock
-ios/*.xcarchive
-ios/*.xcuserstate
-ios/.xcode.env.local
-ios/GoogleService-Info.plist
-ios/*.xcworkspacedata
-
-# iOS build files
-*.dSYM.zip
-*.dSYM
-*.ipa
-DerivedData/
-*.pbxuser
-!default.pbxuser
-*.mode1v3
-!default.mode1v3
-*.mode2v3
-!default.mode2v3
-*.perspectivev3
-!default.perspectivev3
-
-# Node
-node_modules/
-npm-debug.log
-yarn-debug.log
-yarn-error.log
-
-# Android
-android/app/build/
-android/build/
-android/.gradle/
-android/local.properties
-*.keystore
-
-# iOS
-ios/build/
-ios/Pods/
-ios/*.xcworkspace
-ios/DerivedData/
-ios/.DS_Store
-
-# Metro
-.metro-health-check*
-
-# General
-.DS_Store
-.env
-*.log
+# Generated assets
+android/app/src/main/res/drawable*/splashscreen_logo*
+android/app/src/main/res/mipmap*/ic_launcher*

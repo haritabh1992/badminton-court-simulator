@@ -5,12 +5,12 @@
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint",
-    "clean": "rm -rf node_modules && rm -rf android/build && rm -rf android/app/build && rm -rf ios/build && rm -rf ios/Pods && watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/metro-* && rm -rf $TMPDIR/haste-*"
+    "clean": "rm -rf node_modules && rm -rf android/build && rm -rf android/app/build && rm -rf ios/build && rm -rf ios/Pods && watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/metro-* && rm -rf $TMPDIR/haste-*",
+    "ios": "expo run:ios"
   },
   "jest": {
     "preset": "jest-expo"

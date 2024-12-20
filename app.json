@@ -14,14 +14,14 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.haritabhgupta.badmintoncourtsimulator",
+      "versionCode": 1,
+      "permissions": []
     },
     "web": {
       "favicon": "./assets/logo.png"
