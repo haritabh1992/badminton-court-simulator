@@ -115,9 +115,9 @@ export function PlayerMarker({
 const styles = StyleSheet.create({
   marker: {
     position: 'absolute',
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     borderWidth: 2,
     shadowColor: '#000',
     shadowOffset: {
