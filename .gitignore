@@ -74,7 +74,7 @@ android/build/
 android/local.properties
 
 # Android security files
-*.keystore
+*.keystore*
 *.jks
 keystore.properties
 release-keystore.properties
