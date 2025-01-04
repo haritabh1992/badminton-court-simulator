@@ -64,10 +64,7 @@ android/app/release
 android/app/src/main/assets/shell-app-manifest.json
 android/app/src/main/assets/shell-app.bundle
 android/keystores/
-android/.gradle/
 android/captures/
-android/gradlew
-android/gradlew.bat
 android/local.properties
 android/app/build/
 android/build/
@@ -88,3 +85,7 @@ release-keystore.properties
 # Generated assets
 android/app/src/main/res/drawable*/splashscreen_logo*
 android/app/src/main/res/mipmap*/ic_launcher*
+
+# Misc
+.secrets
+keystore.base64
