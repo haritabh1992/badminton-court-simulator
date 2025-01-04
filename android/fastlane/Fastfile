@@ -3,18 +3,6 @@ default_platform(:android)
 platform :android do
   desc "Deploy a new version to the Google Play"
   lane :deploy do
-    gradle(
-      tasks: ['clean', ':app:bundleRelease'],
-      project_dir: './',
-      properties: {
-        "android.injected.version.code" => google_play_track_version_codes(
-          track: "internal",
-          json_key: "play-store-credentials.json",
-          package_name: "com.haritabhgupta.badmintoncourtsimulator"
-        )[0] + 1
-      }
-    )
-    
     upload_to_play_store(
       track: 'internal',  # Can be 'internal', 'alpha', 'beta', or 'production'
       json_key: 'play-store-credentials.json',

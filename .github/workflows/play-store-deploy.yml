@@ -1,0 +1,48 @@
+name: Deploy to Play Store
+
+on:
+  workflow_dispatch:  # Manual trigger only
+
+jobs:
+  deploy:
+    name: Deploy to Play Store
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Download the AAB artifact from the previous workflow
+      - name: Download AAB from artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: app-release
+          path: android/app/build/outputs/bundle/release/
+
+      # Set up Ruby for Fastlane
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0'
+          bundler-cache: true
+
+      # Checkout the repository for accessing Fastlane files
+      - uses: actions/checkout@v3
+
+      # Create the Play Store credentials file
+      - name: Create Service Account Key File
+        run: echo '${{ secrets.PLAY_STORE_CONFIG_JSON }}' > android/play-store-credentials.json
+
+      # Install Fastlane
+      - name: Install Fastlane
+        run: |
+          cd android
+          gem install bundler
+          bundle init
+          bundle add fastlane
+          bundle install
+
+      # Deploy to Play Store using Fastlane
+      - name: Deploy to Play Store
+        run: |
+          cd android
+          bundle exec fastlane deploy
+        env:
+          PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }} 
