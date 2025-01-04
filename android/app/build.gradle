@@ -114,6 +114,8 @@ android {
                 storePassword keystoreProperties['storePassword']
                 keyAlias keystoreProperties['keyAlias']
                 keyPassword keystoreProperties['keyPassword']
+            } else {
+                throw new GradleException("keystore.properties file not found. Required for release signing!")
             }
         }
     }
