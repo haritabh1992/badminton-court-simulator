@@ -3,6 +3,7 @@ name: Android Release
 on:
   push:
     branches: [ main ]  # Trigger on push to main branch
+  workflow_dispatch:    # Allows manual trigger from GitHub Actions UI
 
 jobs:
   deploy:
