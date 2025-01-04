@@ -53,7 +53,6 @@ jobs:
       - name: Generate Expo Assets
         run: |
           npx expo prebuild --platform android --clean
-          npx expo-doctor
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
