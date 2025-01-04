@@ -9,6 +9,9 @@ jobs:
   deploy:
     name: Deploy Android Release
     runs-on: ubuntu-latest
+    env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+    
     steps:
       - uses: actions/checkout@v3
 
@@ -23,6 +26,9 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Cache Gradle Wrapper
         uses: actions/cache@v3
@@ -43,6 +49,11 @@ jobs:
 
       - name: Install Dependencies
         run: npm install
+
+      - name: Generate Expo Assets
+        run: |
+          npx expo prebuild --platform android --clean
+          npx expo-doctor
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1

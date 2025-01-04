@@ -4,7 +4,7 @@ platform :android do
   desc "Deploy a new version to the Google Play"
   lane :deploy do
     gradle(
-      task: 'clean bundleRelease',
+      tasks: ['clean', ':app:bundleRelease'],
       project_dir: './',
       properties: {
         "android.injected.version.code" => google_play_track_version_codes(
