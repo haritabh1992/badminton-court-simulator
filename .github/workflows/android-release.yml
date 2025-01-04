@@ -6,8 +6,8 @@ on:
   workflow_dispatch:    # Allows manual trigger from GitHub Actions UI
 
 jobs:
-  deploy:
-    name: Deploy Android Release
+  build:
+    name: Build Android Release Bundle
     runs-on: ubuntu-latest
     env:
       ANDROID_HOME: /usr/local/lib/android/sdk
@@ -20,6 +20,12 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
+
+      - name: Add Node to PATH
+        run: |
+          echo "$(npm bin -g)" >> $GITHUB_PATH
+          which node
+          node --version
 
       - name: Setup Java JDK
         uses: actions/setup-java@v3
@@ -48,23 +54,13 @@ jobs:
         run: cd android && chmod +x ./gradlew
 
       - name: Install Dependencies
-        run: npm install
+        run: |
+          npm install
+          npm install -g react-native-cli
 
       - name: Generate Expo Assets
         run: |
           npx expo prebuild --platform android --clean
-
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.0'
-          bundler-cache: true
-
-      - name: Install Fastlane
-        run: |
-          cd android
-          bundle init
-          bundle add fastlane
 
       - name: Create Keystore File
         run: |
@@ -80,9 +76,20 @@ jobs:
       - name: Create Service Account Key File
         run: echo '${{ secrets.PLAY_STORE_CONFIG_JSON }}' > android/play-store-credentials.json
 
-      - name: Build & Deploy Android Release
+      # Build AAB using Gradle
+      - name: Build Android Release Bundle
         run: |
           cd android
-          bundle exec fastlane deploy
+          ./gradlew clean :app:bundleRelease
         env:
-          PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }} 
+          SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+
+      # Upload the AAB as an artifact
+      - name: Upload AAB Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 3  # Keep the artifact for 3 days 
