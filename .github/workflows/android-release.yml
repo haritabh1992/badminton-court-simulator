@@ -60,7 +60,7 @@ jobs:
 
       - name: Generate Expo Assets
         run: |
-          npx expo prebuild --platform android --clean
+          npx expo prebuild --platform android
 
       - name: Create Keystore File
         run: |
