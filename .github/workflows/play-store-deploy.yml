@@ -1,7 +1,11 @@
 name: Deploy to Play Store
 
 on:
-  workflow_dispatch:  # Manual trigger only
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'Build workflow run ID'
+        required: true
 
 jobs:
   deploy:
@@ -9,10 +13,14 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      # Download the AAB artifact from the previous workflow
-      - name: Download AAB from artifacts
-        uses: actions/download-artifact@v4
+      - uses: actions/checkout@v3
+
+      # Download artifacts from a specific workflow run
+      - name: Download artifacts
+        uses: dawidd6/action-download-artifact@v2
         with:
+          workflow: android-release.yml
+          run_id: ${{ github.event.inputs.run_id }}
           name: app-release
           path: android/app/build/outputs/bundle/release/
 
@@ -22,9 +30,6 @@ jobs:
         with:
           ruby-version: '3.0'
           bundler-cache: true
-
-      # Checkout the repository for accessing Fastlane files
-      - uses: actions/checkout@v3
 
       # Create the Play Store credentials file
       - name: Create Service Account Key File

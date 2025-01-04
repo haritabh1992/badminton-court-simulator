@@ -6,7 +6,8 @@ platform :android do
     upload_to_play_store(
       track: 'internal',  # Can be 'internal', 'alpha', 'beta', or 'production'
       json_key: 'play-store-credentials.json',
-      aab: './app/build/outputs/bundle/release/app-release.aab'
+      aab: './app/build/outputs/bundle/release/app-release.aab',
+      package_name: 'com.haritabhgupta.badmintoncourtsimulator'
     )
   end
 end 
