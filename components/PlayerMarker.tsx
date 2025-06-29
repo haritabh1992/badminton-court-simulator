@@ -4,6 +4,7 @@ import { View, StyleSheet, GestureResponderEvent, Animated } from 'react-native'
 interface PlayerMarkerProps {
   position: { x: number; y: number };
   color: string;
+  size?: number;
   onPositionChange?: (newPosition: { x: number; y: number }) => void;
   onPositionStart?: (newPosition: { x: number; y: number }) => void;
   onPositionChangeComplete?: () => void;
@@ -12,6 +13,7 @@ interface PlayerMarkerProps {
 export function PlayerMarker({ 
   position, 
   color, 
+  size = 30,
   onPositionChange, 
   onPositionStart, 
   onPositionChangeComplete 
@@ -52,6 +54,9 @@ export function PlayerMarker({
       style={[
         styles.marker,
         {
+          width: size,
+          height: size,
+          borderRadius: size / 2,
           backgroundColor: color,
           borderColor: color === '#ffffff' ? '#000000' : 'white',
           transform: [
@@ -115,9 +120,6 @@ export function PlayerMarker({
 const styles = StyleSheet.create({
   marker: {
     position: 'absolute',
-    width: 30,
-    height: 30,
-    borderRadius: 15,
     borderWidth: 2,
     shadowColor: '#000',
     shadowOffset: {

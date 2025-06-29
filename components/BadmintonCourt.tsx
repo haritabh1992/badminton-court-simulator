@@ -1,9 +1,11 @@
-import React from 'react';
-import { View, StyleSheet, Image, Dimensions, Text } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, Image, Dimensions, Text, TouchableOpacity } from 'react-native';
 import { PlayerMarker } from './PlayerMarker';
 import { IconButton } from './IconButton';
 import { useCourtPositions } from '../hooks/useCourtPositions';
 import { PositionTrail } from './PositionTrail';
+import ContextMenu from './ContextMenu';
+import { useMarkerCustomization } from '../context/MarkerCustomizationContext';
 
 export default function BadmintonCourt() {
   const screenWidth = Dimensions.get('window').width;
@@ -16,6 +18,9 @@ export default function BadmintonCourt() {
   // Without rotation, use normal width/height mapping
   const courtWidth = screenWidth;      // Container width matches screen width
   const courtHeight = availableHeight; // Container height matches available height
+
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const { customizations } = useMarkerCustomization();
 
   const {
     isDoubles,
@@ -40,6 +45,12 @@ export default function BadmintonCourt() {
   return (
     <View style={styles.container}>
       <View style={[styles.banner, { height: BANNER_HEIGHT }]}>
+        <TouchableOpacity 
+          style={styles.hamburger}
+          onPress={() => setIsMenuVisible(true)}
+        >
+          <Text style={styles.hamburgerIcon}>☰</Text>
+        </TouchableOpacity>
         <Text style={styles.bannerText}>Badminton Court Simulator</Text>
       </View>
 
@@ -65,7 +76,7 @@ export default function BadmintonCourt() {
                 key={`trail-team1-${index}`}
                 currentPosition={pos}
                 ghostPosition={ghostPositions.team1[index]!}
-                color="#ff4444"
+                color={customizations[index === 0 ? 'P1' : 'P2'].color}
               />
             )
           ))}
@@ -75,7 +86,7 @@ export default function BadmintonCourt() {
                 key={`trail-team2-${index}`}
                 currentPosition={pos}
                 ghostPosition={ghostPositions.team2[index]!}
-                color="#4444ff"
+                color={customizations[index === 0 ? 'P3' : 'P4'].color}
               />
             )
           ))}
@@ -83,7 +94,7 @@ export default function BadmintonCourt() {
             <PositionTrail
               currentPosition={shuttlePosition}
               ghostPosition={ghostPositions.shuttle}
-              color="#ffffff"
+              color={customizations.Shuttle.color}
             />
           )}
 
@@ -91,7 +102,8 @@ export default function BadmintonCourt() {
             <PlayerMarker 
               key={`team1-${index}`}
               position={pos}
-              color="#ff4444"
+              color={customizations[index === 0 ? 'P1' : 'P2'].color}
+              size={customizations[index === 0 ? 'P1' : 'P2'].size}
               onPositionChange={(newPos) => updatePlayerPosition('team1', index, newPos)}
               onPositionStart={(newPos) => updatePlayerPosition('team1', index, newPos, true)}
               onPositionChangeComplete={handlePositionChangeComplete}
@@ -101,7 +113,8 @@ export default function BadmintonCourt() {
             <PlayerMarker 
               key={`team2-${index}`}
               position={pos}
-              color="#4444ff"
+              color={customizations[index === 0 ? 'P3' : 'P4'].color}
+              size={customizations[index === 0 ? 'P3' : 'P4'].size}
               onPositionChange={(newPos) => updatePlayerPosition('team2', index, newPos)}
               onPositionStart={(newPos) => updatePlayerPosition('team2', index, newPos, true)}
               onPositionChangeComplete={handlePositionChangeComplete}
@@ -110,7 +123,8 @@ export default function BadmintonCourt() {
 
           <PlayerMarker
             position={shuttlePosition}
-            color="#ffffff"
+            color={customizations.Shuttle.color}
+            size={customizations.Shuttle.size}
             onPositionChange={updateShuttlePosition}
             onPositionStart={(newPos) => updateShuttlePosition(newPos, true)}
             onPositionChangeComplete={handlePositionChangeComplete}
@@ -175,6 +189,13 @@ export default function BadmintonCourt() {
           </View>
         </View>
       </View>
+
+      <ContextMenu
+        isVisible={isMenuVisible}
+        onClose={() => setIsMenuVisible(false)}
+        isDoubles={isDoubles}
+        onToggleDoubles={(value) => toggleGameMode(value)}
+      />
     </View>
   );
 }
@@ -228,6 +249,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(0, 0, 0, 0.1)',
+    flexDirection: 'row',
   },
   bannerText: {
     fontSize: 20,
@@ -239,5 +261,14 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
     marginBottom: 4,
+  },
+  hamburger: {
+    position: 'absolute',
+    left: 20,
+    padding: 10,
+  },
+  hamburgerIcon: {
+    fontSize: 24,
+    color: '#333',
   },
 }); 
