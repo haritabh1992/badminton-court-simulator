@@ -21,7 +21,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.haritabhgupta.badmintoncourtsimulator",
-      "versionCode": 4,
+      "versionCode": 5,
       "permissions": []
     },
     "web": {
