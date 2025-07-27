@@ -1,50 +1,127 @@
-# Welcome to your Expo app 👋
+# Badminton Court Simulator
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A React Native app for simulating badminton court positions and movements with enhanced UI using React Native Paper.
 
-## Get started
+## Features
 
-1. Install dependencies
+### Core Functionality
+- **Interactive Court**: Drag and drop players and shuttle on a badminton court
+- **Game Modes**: Switch between singles and doubles play
+- **Position History**: Undo/redo functionality for position changes
+- **Trail Markers**: Visual trails showing player and shuttle movement
+- **Real-time Updates**: Smooth animations and position tracking
 
-   ```bash
-   npm install
-   ```
+### Enhanced UI with React Native Paper
+- **Modern Design**: Clean, material design interface
+- **Responsive Layout**: Adapts to different screen sizes
+- **Smooth Animations**: Enhanced visual feedback and transitions
+- **Professional Components**: Using React Native Paper for consistent UI
 
-2. Start the app
+### Player Customization
+- **Icon Selection**: Choose from 15+ different player icons including:
+  - Account icons (account, account-circle, account-group)
+  - Sports icons (badminton, sports-tennis, sports-soccer, etc.)
+  - Person icons (person, person-outline, face, emoji-people)
+  - Decorative icons (star, favorite)
+- **Color Customization**: 9 different color options for each player
+- **Size Adjustment**: Adjustable marker size (20-60px range)
+- **Real-time Preview**: See changes immediately as you customize
 
-   ```bash
-    npx expo start
-   ```
+### Settings Panel
+- **Comprehensive Overview**: View all player customizations in one place
+- **Quick Actions**: Reset all customizations or close panel
+- **Visual Indicators**: See current icon, color, and size for each player
+- **Organized Layout**: Grouped by teams for easy management
 
-In the output, you'll find options to open the app in a
+## How to Use
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### Basic Navigation
+1. **Move Players**: Tap and drag players to reposition them on the court
+2. **Move Shuttle**: Drag the shuttle to track its position
+3. **Toggle Game Mode**: Use the account/account-group button to switch between singles and doubles
+4. **Reset Positions**: Use the refresh button to reset all positions
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### Player Customization
+1. **Long Press**: Long press on any player marker to open customization menu
+2. **Choose Icon**: Select from the available icon options
+3. **Pick Color**: Choose from the color palette
+4. **Adjust Size**: Use the slider to change marker size
+5. **Apply Changes**: Changes are applied immediately
 
-## Get a fresh project
+### Settings Panel
+1. **Open Settings**: Tap the menu icon in the top-left corner
+2. **View Customizations**: See all current player settings
+3. **Quick Reset**: Use "Reset All" to restore default settings
+4. **Close Panel**: Tap "Close" or the menu icon again
 
-When you're ready, run:
+### Trail Features
+- **Player Trails**: Toggle player movement trails with the foot-print icon
+- **Shuttle Trails**: Toggle shuttle movement trails with the badminton icon
+- **History Navigation**: Use undo/redo buttons to navigate position history
 
-```bash
-npm run reset-project
-```
+## Technical Details
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Dependencies
+- **React Native Paper**: Modern UI components and theming
+- **Expo Vector Icons**: Material Community Icons for player markers
+- **React Native Gesture Handler**: Smooth touch interactions
+- **React Native Slider**: Size adjustment controls
 
-## Learn more
+### Architecture
+- **Context API**: Centralized state management for customizations
+- **Custom Hooks**: Reusable logic for court positions and history
+- **Component Composition**: Modular, reusable components
+- **TypeScript**: Full type safety throughout the application
 
-To learn more about developing your project with Expo, look at the following resources:
+### Performance
+- **Optimized Animations**: Smooth 60fps animations using native driver
+- **Efficient Rendering**: Minimal re-renders with proper state management
+- **Memory Management**: Proper cleanup of timeouts and listeners
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Installation
 
-## Join the community
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Start the development server: `npm start`
+4. Run on your preferred platform:
+   - iOS: `npm run ios`
+   - Android: `npm run android`
+   - Web: `npm run web`
 
-Join our community of developers creating universal apps.
+## Customization Options
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Available Icons
+- `account` - Default player icon
+- `account-circle` - Circular player icon
+- `account-group` - Group player icon
+- `badminton` - Badminton-specific icon
+- `sports-tennis` - Tennis player icon
+- `person` - Simple person icon
+- `person-outline` - Outlined person icon
+- `face` - Face icon
+- `emoji-people` - Emoji person icon
+- `sports-soccer` - Soccer player icon
+- `sports-basketball` - Basketball player icon
+- `sports-volleyball` - Volleyball player icon
+- `sports-cricket` - Cricket player icon
+- `star` - Star icon
+- `favorite` - Heart icon
+
+### Available Colors
+- Red (#ff4444)
+- Green (#44ff44)
+- Blue (#4444ff)
+- Yellow (#ffff44)
+- Purple (#ff44ff)
+- Cyan (#44ffff)
+- White (#ffffff)
+- Orange (#ff8800)
+- Pink (#ff88ff)
+
+## Contributing
+
+Feel free to submit issues and enhancement requests!
+
+## License
+
+This project is licensed under the MIT License.

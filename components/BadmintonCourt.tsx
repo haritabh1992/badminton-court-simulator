@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Image, Dimensions, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Image, Dimensions, TouchableOpacity } from 'react-native';
+import { Appbar, Text as PaperText } from 'react-native-paper';
 import { PlayerMarker } from './PlayerMarker';
 import { IconButton } from './IconButton';
 import { useCourtPositions } from '../hooks/useCourtPositions';
 import { PositionTrail } from './PositionTrail';
-import ContextMenu from './ContextMenu';
+import { SettingsPanel } from './SettingsPanel';
 import { useMarkerCustomization } from '../context/MarkerCustomizationContext';
 
 export default function BadmintonCourt() {
@@ -20,7 +21,7 @@ export default function BadmintonCourt() {
   const courtHeight = availableHeight; // Container height matches available height
 
   const [isMenuVisible, setIsMenuVisible] = useState(false);
-  const { customizations } = useMarkerCustomization();
+  const { customizations, updateMarkerCustomization } = useMarkerCustomization();
 
   const {
     isDoubles,
@@ -44,15 +45,10 @@ export default function BadmintonCourt() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.banner, { height: BANNER_HEIGHT }]}>
-        <TouchableOpacity 
-          style={styles.hamburger}
-          onPress={() => setIsMenuVisible(true)}
-        >
-          <Text style={styles.hamburgerIcon}>☰</Text>
-        </TouchableOpacity>
-        <Text style={styles.bannerText}>Badminton Court Simulator</Text>
-      </View>
+      <Appbar.Header style={styles.banner}>
+        <Appbar.Action icon="menu" onPress={() => setIsMenuVisible(true)} />
+        <Appbar.Content title="Badminton Court Simulator" />
+      </Appbar.Header>
 
       <View style={[styles.courtWrapper, { marginBottom: BUTTON_CONTAINER_HEIGHT }]}>
         <View 
@@ -105,9 +101,13 @@ export default function BadmintonCourt() {
               color={customizations[index === 0 ? 'P1' : 'P2'].color}
               size={customizations[index === 0 ? 'P1' : 'P2'].size}
               isLeftHanded={customizations[index === 0 ? 'P1' : 'P2'].isLeftHanded}
+              icon={customizations[index === 0 ? 'P1' : 'P2'].icon}
               onPositionChange={(newPos) => updatePlayerPosition('team1', index, newPos)}
               onPositionStart={(newPos) => updatePlayerPosition('team1', index, newPos, true)}
               onPositionChangeComplete={handlePositionChangeComplete}
+              onColorChange={(color) => updateMarkerCustomization(index === 0 ? 'P1' : 'P2', { color })}
+              onSizeChange={(size) => updateMarkerCustomization(index === 0 ? 'P1' : 'P2', { size })}
+              onIconChange={(icon) => updateMarkerCustomization(index === 0 ? 'P1' : 'P2', { icon })}
             />
           ))}
           {playerPositions.team2.map((pos, index) => (
@@ -117,9 +117,13 @@ export default function BadmintonCourt() {
               color={customizations[index === 0 ? 'P3' : 'P4'].color}
               size={customizations[index === 0 ? 'P3' : 'P4'].size}
               isLeftHanded={customizations[index === 0 ? 'P3' : 'P4'].isLeftHanded}
+              icon={customizations[index === 0 ? 'P3' : 'P4'].icon}
               onPositionChange={(newPos) => updatePlayerPosition('team2', index, newPos)}
               onPositionStart={(newPos) => updatePlayerPosition('team2', index, newPos, true)}
               onPositionChangeComplete={handlePositionChangeComplete}
+              onColorChange={(color) => updateMarkerCustomization(index === 0 ? 'P3' : 'P4', { color })}
+              onSizeChange={(size) => updateMarkerCustomization(index === 0 ? 'P3' : 'P4', { size })}
+              onIconChange={(icon) => updateMarkerCustomization(index === 0 ? 'P3' : 'P4', { icon })}
             />
           ))}
 
@@ -127,27 +131,31 @@ export default function BadmintonCourt() {
             position={shuttlePosition}
             color={customizations.Shuttle.color}
             size={customizations.Shuttle.size}
+            icon={customizations.Shuttle.icon}
             onPositionChange={updateShuttlePosition}
             onPositionStart={(newPos) => updateShuttlePosition(newPos, true)}
             onPositionChangeComplete={handlePositionChangeComplete}
+            onColorChange={(color) => updateMarkerCustomization('Shuttle', { color })}
+            onSizeChange={(size) => updateMarkerCustomization('Shuttle', { size })}
+            onIconChange={(icon) => updateMarkerCustomization('Shuttle', { icon })}
           />
         </View>
       </View>
 
       <View style={[styles.buttonContainer, { 
         height: BUTTON_CONTAINER_HEIGHT,
-        bottom: 4  // Add some padding from the bottom
+        bottom: 4
       }]}>
         {/* Left group: Game setup */}
-        <View>
-          <Text style={styles.buttonGroupLabel}>Game Setup</Text>
+        <View style={styles.buttonGroupContainer}>
+          <PaperText variant="labelSmall" style={styles.buttonGroupLabel}>Game Setup</PaperText>
           <View style={styles.buttonGroup}>
             <IconButton
-              icon="↺"
+              icon="refresh"
               onPress={resetPositions}
             />
             <IconButton
-              icon={isDoubles ? "👥" : "👤"}
+              icon={isDoubles ? "account-group" : "account"}
               onPress={() => toggleGameMode(!isDoubles)}
             />
           </View>
@@ -156,16 +164,16 @@ export default function BadmintonCourt() {
         <View style={styles.divider} />
 
         {/* Center group: History Navigation */}
-        <View>
-          <Text style={styles.buttonGroupLabel}>History Navigation</Text>
+        <View style={styles.buttonGroupContainer}>
+          <PaperText variant="labelSmall" style={styles.buttonGroupLabel}>History</PaperText>
           <View style={styles.buttonGroup}>
             <IconButton
-              icon="◀"
+              icon="undo"
               onPress={undo}
               disabled={!canUndo}
             />
             <IconButton
-              icon="▶"
+              icon="redo"
               onPress={redo}
               disabled={!canRedo}
             />
@@ -175,24 +183,24 @@ export default function BadmintonCourt() {
         <View style={styles.divider} />
 
         {/* Right group: Trail Markers */}
-        <View>
-          <Text style={styles.buttonGroupLabel}>Trail Markers</Text>
+        <View style={styles.buttonGroupContainer}>
+          <PaperText variant="labelSmall" style={styles.buttonGroupLabel}>Trails</PaperText>
           <View style={styles.buttonGroup}>
             <IconButton
-              icon="👟"
+              icon="shoe-print"
               onPress={togglePlayerTrails}
               active={showPlayerTrails}
             />
             <IconButton
-              icon="🏸"
+              icon="badminton"
               onPress={toggleShuttleTrail}
               active={showShuttleTrail}
             />
           </View>
         </View>
-      </View>
+              </View>
 
-      <ContextMenu
+      <SettingsPanel
         isVisible={isMenuVisible}
         onClose={() => setIsMenuVisible(false)}
       />
@@ -222,17 +230,27 @@ const styles = StyleSheet.create({
   buttonContainer: {
     position: 'absolute',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-evenly',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    borderRadius: 15,  // Add rounded corners
-    marginHorizontal: 10,  // Add some horizontal padding
-    width: '100%',  
+    paddingHorizontal: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 12,
+    marginHorizontal: 10,
+    width: '100%',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   buttonGroup: {
     flexDirection: 'row',
-    gap: 20,
+    gap: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   disabledButton: {
     opacity: 0.5,
@@ -244,17 +262,7 @@ const styles = StyleSheet.create({
   },
   banner: {
     width: '100%',
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0, 0, 0, 0.1)',
-    flexDirection: 'row',
-  },
-  bannerText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
+    backgroundColor: '#ffffff',
   },
   buttonGroupLabel: {
     fontSize: 12,
@@ -262,13 +270,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 4,
   },
-  hamburger: {
-    position: 'absolute',
-    left: 20,
-    padding: 10,
-  },
-  hamburgerIcon: {
-    fontSize: 24,
-    color: '#333',
+  buttonGroupContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
   },
 }); 

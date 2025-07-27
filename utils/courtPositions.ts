@@ -12,12 +12,12 @@ export function getInitialPositions(isDoublesMode: boolean, courtDimensions: Cou
   if (isDoublesMode) {
     return {
       team1: [
-        { x: centerX - offsetX, y: centerY - offsetY }, // Top left
-        { x: centerX - offsetX, y: centerY + offsetY }, // Bottom left
+        { x: centerX - offsetX, y: centerY - offsetY }, // Top left (P1)
+        { x: centerX + offsetX, y: centerY - offsetY }, // Top right (P2)
       ],
       team2: [
-        { x: centerX + offsetX, y: centerY + offsetY }, // Bottom right
-        { x: centerX + offsetX, y: centerY - offsetY }, // Top right
+        { x: centerX - offsetX, y: centerY + offsetY }, // Bottom left (P3)
+        { x: centerX + offsetX, y: centerY + offsetY }, // Bottom right (P4)
       ],
     };
   }

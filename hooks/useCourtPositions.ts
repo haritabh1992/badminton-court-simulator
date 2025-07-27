@@ -16,7 +16,7 @@ interface PositionState {
 }
 
 export function useCourtPositions(courtDimensions: CourtDimensions) {
-  const [isDoubles, setIsDoubles] = useState(false);
+  const [isDoubles, setIsDoubles] = useState(true);
   const [showPlayerTrails, setShowPlayerTrails] = useState(true);
   const [showShuttleTrail, setShowShuttleTrail] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);

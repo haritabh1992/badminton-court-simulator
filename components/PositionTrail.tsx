@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { StyleSheet, Animated } from 'react-native';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import { PlayerPosition } from '../types/game';
 
 interface PositionTrailProps {
@@ -9,24 +9,7 @@ interface PositionTrailProps {
 }
 
 export function PositionTrail({ currentPosition, ghostPosition, color }: PositionTrailProps) {
-  const opacity = useRef(new Animated.Value(1)).current;
-  const isFirstRender = useRef(true);
-
-  useEffect(() => {
-    // Only animate after the first render
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-
-    // Don't reset opacity, just ensure it's visible
-    Animated.spring(opacity, {
-      toValue: 1,
-      useNativeDriver: true,
-      tension: 280,
-      friction: 22,
-    }).start();
-  }, []);  // Empty dependency array - only run on mount
+  // Trails are always visible - no complex state management needed
 
   // Calculate the angle and length of the line
   const dx = currentPosition.x - ghostPosition.x;
@@ -35,11 +18,11 @@ export function PositionTrail({ currentPosition, ghostPosition, color }: Positio
   const length = Math.sqrt(dx * dx + dy * dy);
 
   // Create dots for the trail
-  const DOT_SIZE = 3;
-  const DOT_SPACING = 8;
+  const DOT_SIZE = 4;
+  const DOT_SPACING = 10;
   const numberOfDots = Math.floor(length / DOT_SPACING);
   const dots = Array.from({ length: numberOfDots }, (_, i) => (
-    <Animated.View
+    <View
       key={i}
       style={[
         styles.dot,
@@ -49,10 +32,7 @@ export function PositionTrail({ currentPosition, ghostPosition, color }: Positio
           backgroundColor: color,
           width: DOT_SIZE,
           height: DOT_SIZE,
-          opacity: opacity.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 0.5],
-          }),
+          opacity: 0.7,
         },
       ]}
     />
@@ -61,7 +41,7 @@ export function PositionTrail({ currentPosition, ghostPosition, color }: Positio
   return (
     <>
       {dots}
-      <Animated.View
+      <View
         style={[
           styles.ghostMarker,
           {
@@ -69,10 +49,7 @@ export function PositionTrail({ currentPosition, ghostPosition, color }: Positio
             top: ghostPosition.y,
             backgroundColor: color,
             borderColor: color === '#ffffff' ? '#000000' : 'white',
-            opacity: opacity.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0, 0.3],
-            }),
+            opacity: 0.5,
           },
         ]}
       />
@@ -83,7 +60,9 @@ export function PositionTrail({ currentPosition, ghostPosition, color }: Positio
 const styles = StyleSheet.create({
   dot: {
     position: 'absolute',
-    borderRadius: 1.5,
+    borderRadius: 2,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   ghostMarker: {
     position: 'absolute',

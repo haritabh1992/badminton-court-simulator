@@ -1,56 +1,47 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { IconButton as PaperIconButton } from 'react-native-paper';
 
 interface IconButtonProps {
-  onPress: () => void;
   icon: string;
+  onPress: () => void;
   disabled?: boolean;
   active?: boolean;
+  size?: number;
 }
 
-export function IconButton({ onPress, icon, disabled, active }: Omit<IconButtonProps, 'position'>) {
+export function IconButton({ 
+  icon, 
+  onPress, 
+  disabled = false, 
+  active = false,
+  size = 24 
+}: IconButtonProps) {
   return (
-    <TouchableOpacity 
-      style={[
-        styles.button,
-        disabled && styles.disabled,
-        active && styles.active
-      ]}
+    <PaperIconButton
+      icon={icon}
+      size={size}
       onPress={onPress}
       disabled={disabled}
-    >
-      <Text style={[
-        styles.buttonText, 
-        disabled && styles.disabledText,
-        active && styles.activeText
-      ]}>{icon}</Text>
-    </TouchableOpacity>
+      mode={active ? 'contained' : 'outlined'}
+      style={[
+        styles.button,
+        active && styles.activeButton
+      ]}
+      mode="contained"
+      iconColor={active ? '#ffffff' : '#666666'}
+    />
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    width: 40,
-    height: 40,
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
+    margin: 2,
+    borderRadius: 50,
+    width: 48,
+    height: 48,
   },
-  buttonText: {
-    fontSize: 24,
-    textAlign: 'center',
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-  disabledText: {
-    color: '#666',
-  },
-  active: {
-    backgroundColor: 'rgba(33, 150, 243, 0.3)',
-  },
-  activeText: {
-    color: '#2196F3',
+  activeButton: {
+    backgroundColor: '#2196F3',
   },
 }); 

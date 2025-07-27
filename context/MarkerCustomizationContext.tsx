@@ -6,6 +6,7 @@ export type MarkerCustomization = {
   size: number;
   color: string;
   isLeftHanded: boolean;
+  icon: string;
 };
 
 export type Customizations = {
@@ -21,11 +22,11 @@ interface MarkerCustomizationContextType {
 }
 
 const defaultCustomizations: Customizations = {
-  P1: { size: 40, color: '#ff4444', isLeftHanded: false },
-  P2: { size: 40, color: '#ff4444', isLeftHanded: false },
-  P3: { size: 40, color: '#4444ff', isLeftHanded: false },
-  P4: { size: 40, color: '#4444ff', isLeftHanded: false },
-  Shuttle: { size: 40, color: '#ffffff', isLeftHanded: false },
+  P1: { size: 40, color: '#ff4444', isLeftHanded: false, icon: 'account' },
+  P2: { size: 40, color: '#ff4444', isLeftHanded: false, icon: 'account' },
+  P3: { size: 40, color: '#4444ff', isLeftHanded: false, icon: 'account' },
+  P4: { size: 40, color: '#4444ff', isLeftHanded: false, icon: 'account' },
+  Shuttle: { size: 40, color: '#ffffff', isLeftHanded: false, icon: 'badminton' },
 };
 
 const MarkerCustomizationContext = createContext<MarkerCustomizationContextType | undefined>(undefined);
