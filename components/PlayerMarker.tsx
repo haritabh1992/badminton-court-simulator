@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, GestureResponderEvent, Modal, TouchableOpacity, Text, Dimensions } from 'react-native';
+import { View, StyleSheet, GestureResponderEvent, Modal, TouchableOpacity, Text, Dimensions, Image } from 'react-native';
 import { Button, Card, Chip, IconButton, Text as PaperText } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
@@ -10,6 +10,7 @@ interface PlayerMarkerProps {
   size?: number;
   isLeftHanded?: boolean;
   icon?: string;
+  iconType?: 'icon' | 'text' | 'photo';
   onPositionChange?: (newPosition: { x: number; y: number }) => void;
   onPositionStart?: (newPosition: { x: number; y: number }) => void;
   onPositionChangeComplete?: () => void;
@@ -31,6 +32,7 @@ export function PlayerMarker({
   size,
   isLeftHanded,
   icon = 'account',
+  iconType = 'icon',
   onPositionChange, 
   onPositionStart, 
   onPositionChangeComplete,
@@ -152,11 +154,37 @@ export function PlayerMarker({
           setIsLifted(false);
         }}
               >
-          <MaterialCommunityIcons
-            name={icon as any}
-            size={markerSize * 0.6}
-            color={color === '#ffffff' ? '#000000' : 'white'}
-          />
+          {iconType === 'icon' && (
+            <MaterialCommunityIcons
+              name={icon as any}
+              size={markerSize * 0.6}
+              color={color === '#ffffff' ? '#000000' : 'white'}
+            />
+          )}
+          {iconType === 'text' && (
+            <Text style={[
+              styles.textIcon,
+              {
+                fontSize: markerSize * 0.4,
+                color: color === '#ffffff' ? '#000000' : 'white'
+              }
+            ]}>
+              {icon}
+            </Text>
+          )}
+          {iconType === 'photo' && (
+            <Image
+              source={{ uri: icon }}
+              style={[
+                styles.photoIcon,
+                {
+                  width: markerSize * 0.8,
+                  height: markerSize * 0.8,
+                  borderRadius: markerSize * 0.4,
+                }
+              ]}
+            />
+          )}
         </View>
 
       <Modal
@@ -367,5 +395,12 @@ const styles = StyleSheet.create({
   closeButton: {
     marginTop: 8,
   },
-
+  textIcon: {
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  photoIcon: {
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
 }); 

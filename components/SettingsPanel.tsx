@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, StyleSheet, ScrollView, Modal, TouchableOpacity, Dimensions, Animated } from 'react-native';
+import { View, StyleSheet, ScrollView, Modal, TouchableOpacity, Dimensions, Animated, Text, Image } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { LinearGradient } from 'expo-linear-gradient';
 import { 
@@ -15,7 +15,8 @@ import {
   IconButton
 } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useMarkerCustomization, MarkerId } from '../context/MarkerCustomizationContext';
+import { useMarkerCustomization, MarkerId, IconType } from '../context/MarkerCustomizationContext';
+import { IconCustomizationModal } from './IconCustomizationModal';
 
 // Reusable component for player/shuttle items
 interface MarkerItemProps {
@@ -29,6 +30,7 @@ interface MarkerItemProps {
 
 function MarkerItem({ markerId, title, customizations, updateMarkerCustomization }: MarkerItemProps) {
   const customization = customizations[markerId];
+  const [showIconCustomization, setShowIconCustomization] = useState(false);
   
   // Convert current color to hue value (0-360)
   const getHueFromColor = (color: string) => {
@@ -135,25 +137,54 @@ function MarkerItem({ markerId, title, customizations, updateMarkerCustomization
   
   return (
     <View style={styles.markerItemContainer}>
-      <View style={styles.markerItemRow}>
-        <View
-          style={[
-            styles.markerPreview,
-            {
-              backgroundColor: customization.color,
-              borderColor: customization.color === '#ffffff' ? '#000000' : 'white',
-              width: Math.min(customization.size * 0.8, 45),
-              height: Math.min(customization.size * 0.8, 45),
-              borderRadius: Math.min(customization.size * 0.8, 45) / 2,
-            }
-          ]}
-        >
-          <MaterialCommunityIcons
-            name={customization.icon as any}
-            size={Math.min(customization.size * 0.8, 45) * 0.6}
-            color={customization.color === '#ffffff' ? '#000000' : 'white'}
-          />
-        </View>
+              <View style={styles.markerItemRow}>
+          <TouchableOpacity
+            onPress={() => markerId !== 'Shuttle' && setShowIconCustomization(true)}
+            disabled={markerId === 'Shuttle'}
+            style={[
+              styles.markerPreview,
+              {
+                backgroundColor: customization.color,
+                borderColor: customization.color === '#ffffff' ? '#000000' : 'white',
+                width: Math.min(customization.size * 0.8, 45),
+                height: Math.min(customization.size * 0.8, 45),
+                borderRadius: Math.min(customization.size * 0.8, 45) / 2,
+                opacity: markerId === 'Shuttle' ? 0.6 : 1,
+              }
+            ]}
+          >
+          {customization.iconType === 'icon' && (
+            <MaterialCommunityIcons
+              name={customization.icon as any}
+              size={Math.min(customization.size * 0.8, 45) * 0.6}
+              color={customization.color === '#ffffff' ? '#000000' : 'white'}
+            />
+          )}
+          {customization.iconType === 'text' && (
+            <Text style={[
+              styles.textIcon,
+              {
+                fontSize: Math.min(customization.size * 0.8, 45) * 0.4,
+                color: customization.color === '#ffffff' ? '#000000' : 'white'
+              }
+            ]}>
+              {customization.icon}
+            </Text>
+          )}
+          {customization.iconType === 'photo' && (
+            <Image
+              source={{ uri: customization.icon }}
+              style={[
+                styles.photoIcon,
+                {
+                  width: Math.min(customization.size * 0.8, 45) * 0.8,
+                  height: Math.min(customization.size * 0.8, 45) * 0.8,
+                  borderRadius: Math.min(customization.size * 0.8, 45) * 0.4,
+                }
+              ]}
+            />
+          )}
+        </TouchableOpacity>
         <View style={styles.colorSliderContainer}>
           <View style={styles.colorSliderTrack}>
             <LinearGradient
@@ -187,6 +218,23 @@ function MarkerItem({ markerId, title, customizations, updateMarkerCustomization
           />
         </View>
       </View>
+
+      {markerId !== 'Shuttle' && (
+        <IconCustomizationModal
+          visible={showIconCustomization}
+          onClose={() => setShowIconCustomization(false)}
+          onSave={(type: IconType, value: string) => {
+            updateMarkerCustomization(markerId, { 
+              icon: value, 
+              iconType: type 
+            });
+          }}
+          currentValue={customization.icon}
+          currentType={customization.iconType}
+          markerId={markerId}
+          currentColor={customization.color}
+        />
+      )}
     </View>
   );
 }
@@ -455,5 +503,13 @@ const styles = StyleSheet.create({
   slider: {
     width: 100,
     height: 30,
+  },
+  textIcon: {
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  photoIcon: {
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
 }); 

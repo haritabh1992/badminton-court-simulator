@@ -2,11 +2,14 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 export type MarkerId = 'P1' | 'P2' | 'P3' | 'P4' | 'Shuttle';
 
+export type IconType = 'icon' | 'text' | 'photo';
+
 export type MarkerCustomization = {
   size: number;
   color: string;
   isLeftHanded: boolean;
   icon: string;
+  iconType: IconType;
 };
 
 export type Customizations = {
@@ -22,11 +25,11 @@ interface MarkerCustomizationContextType {
 }
 
 const defaultCustomizations: Customizations = {
-  P1: { size: 40, color: '#ff4444', isLeftHanded: false, icon: 'account' },
-  P2: { size: 40, color: '#ff4444', isLeftHanded: false, icon: 'account' },
-  P3: { size: 40, color: '#4444ff', isLeftHanded: false, icon: 'account' },
-  P4: { size: 40, color: '#4444ff', isLeftHanded: false, icon: 'account' },
-  Shuttle: { size: 40, color: '#ffffff', isLeftHanded: false, icon: 'badminton' },
+  P1: { size: 40, color: '#ff4444', isLeftHanded: false, icon: 'account', iconType: 'icon' },
+  P2: { size: 40, color: '#ff4444', isLeftHanded: false, icon: 'account', iconType: 'icon' },
+  P3: { size: 40, color: '#4444ff', isLeftHanded: false, icon: 'account', iconType: 'icon' },
+  P4: { size: 40, color: '#4444ff', isLeftHanded: false, icon: 'account', iconType: 'icon' },
+  Shuttle: { size: 40, color: '#ffffff', isLeftHanded: false, icon: 'badminton', iconType: 'icon' },
 };
 
 const MarkerCustomizationContext = createContext<MarkerCustomizationContextType | undefined>(undefined);

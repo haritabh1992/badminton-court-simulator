@@ -102,6 +102,7 @@ export default function BadmintonCourt() {
               size={customizations[index === 0 ? 'P1' : 'P2'].size}
               isLeftHanded={customizations[index === 0 ? 'P1' : 'P2'].isLeftHanded}
               icon={customizations[index === 0 ? 'P1' : 'P2'].icon}
+              iconType={customizations[index === 0 ? 'P1' : 'P2'].iconType}
               onPositionChange={(newPos) => updatePlayerPosition('team1', index, newPos)}
               onPositionStart={(newPos) => updatePlayerPosition('team1', index, newPos, true)}
               onPositionChangeComplete={handlePositionChangeComplete}
@@ -118,6 +119,7 @@ export default function BadmintonCourt() {
               size={customizations[index === 0 ? 'P3' : 'P4'].size}
               isLeftHanded={customizations[index === 0 ? 'P3' : 'P4'].isLeftHanded}
               icon={customizations[index === 0 ? 'P3' : 'P4'].icon}
+              iconType={customizations[index === 0 ? 'P3' : 'P4'].iconType}
               onPositionChange={(newPos) => updatePlayerPosition('team2', index, newPos)}
               onPositionStart={(newPos) => updatePlayerPosition('team2', index, newPos, true)}
               onPositionChangeComplete={handlePositionChangeComplete}
@@ -132,6 +134,7 @@ export default function BadmintonCourt() {
             color={customizations.Shuttle.color}
             size={customizations.Shuttle.size}
             icon={customizations.Shuttle.icon}
+            iconType={customizations.Shuttle.iconType}
             onPositionChange={updateShuttlePosition}
             onPositionStart={(newPos) => updateShuttlePosition(newPos, true)}
             onPositionChangeComplete={handlePositionChangeComplete}
